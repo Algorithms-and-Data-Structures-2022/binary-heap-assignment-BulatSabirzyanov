@@ -41,12 +41,15 @@ namespace assignment {
       return false;
     }
 
+    data_[size_] = *new Node(key,value);
+    sift_up(size_);
+    size_ += 1;
+
     // Tips:
     // 1. Вставьте новый узел в "конец" массива.
     // 2. Увеличьте размер двоичной кучи.
     // 3. Вызовите операцию sift_up над индексом вставленного элемента.
-
-    return false;
+    return true;
   }
 
   std::optional<int> MinBinaryHeap::Extract() {
@@ -56,19 +59,36 @@ namespace assignment {
       return std::nullopt;
     }
 
+    int cor = data_[0].value;
+    data_[0] = data_[size_ - 1];
+    size_ -= 1;
+    heapify(0);
     // Tips:
     // 1. Сохраните значение текущего корня в переменной.
     // 2. В корень поместите последний элемент (правый нижний в куче).
     // 3. Уменьшите размер двоичной кучи.
     // 4. Вызовите функцию "спуска" узлов heapify над индексом корня.
 
-    return std::nullopt;
+    return cor;
   }
 
   bool MinBinaryHeap::Remove(int key) {
 
     constexpr int min_key_value = std::numeric_limits<int>::min();
-
+    bool found = false;
+    for(int i = 0;i<size_;i++)
+    {
+      if (data_[i].key == key) {
+        data_[i].key = min_key_value;
+        sift_up(i);
+        found = true;
+        break;
+      }
+    }
+    if (found) {
+      Extract();
+    }
+    return found;
     // Tips:
     // 1. Найдите индекс удаляемого узла по ключу.
     // 2. Установите ключом удаляемого узла наименьшее возможное значение ключа min_key_value.
@@ -79,10 +99,16 @@ namespace assignment {
   }
 
   void MinBinaryHeap::Clear() {
+    size_ = 0;
     // Write your code here ...
   }
 
   std::optional<int> MinBinaryHeap::Search(int key) const {
+    for(int i = 0;i<size_;i++)
+    {
+      if(data_[i].key == key)
+        return data_[i].value;
+    }
     // Write your code here ...
     return std::nullopt;
   }
